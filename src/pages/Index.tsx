@@ -1,14 +1,46 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useAssessment } from "@/hooks/useAssessment";
+import { AssessmentIntro } from "@/components/assessment/AssessmentIntro";
+import { QuestionCard } from "@/components/assessment/QuestionCard";
+import { ResultsPage } from "@/components/assessment/ResultsPage";
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const {
+    state,
+    currentQuestion,
+    totalQuestions,
+    canGoBack,
+    startAssessment,
+    answerQuestion,
+    nextQuestion,
+    previousQuestion,
+    restartAssessment,
+    getCurrentResponse,
+  } = useAssessment();
+
+  if (state.currentSection === 'intro') {
+    return <AssessmentIntro onStart={startAssessment} />;
+  }
+
+  if (state.currentSection === 'results' && state.results) {
+    return <ResultsPage results={state.results} onRestart={restartAssessment} />;
+  }
+
+  if (currentQuestion) {
+    return (
+      <QuestionCard
+        question={currentQuestion}
+        questionNumber={state.currentQuestionIndex + 1}
+        totalQuestions={totalQuestions}
+        onAnswer={answerQuestion}
+        onNext={nextQuestion}
+        onPrevious={previousQuestion}
+        canGoBack={canGoBack}
+        currentValue={getCurrentResponse()}
+      />
+    );
+  }
+
+  return <AssessmentIntro onStart={startAssessment} />;
 };
 
 export default Index;
